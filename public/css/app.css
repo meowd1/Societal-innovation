@@ -1,0 +1,200 @@
+/* app.css - Formal Government Design System (UIDAI Inspired) */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #191636;
+    --accent-color: #ed6c02;
+    --accent-hover: #e65100;
+    --bg-light: #f4f4f4;
+    --text-main: #212121;
+    --transition: all 0.2s ease-in-out;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Header & Navbar */
+.gov-header-top {
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.custom-navbar {
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    transition: var(--transition);
+}
+
+.custom-navbar .navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    letter-spacing: -0.5px;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-main) !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 0.25rem;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    background: #f4f4f4;
+    transform: none;
+}
+
+.btn-nav-primary {
+    background: var(--accent-color);
+    color: white !important;
+    border-radius: 4px;
+    padding: 0.5rem 1.5rem !important;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.btn-nav-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+/* Cards & Containers */
+.card {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: var(--transition);
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.card:hover {
+    transform: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background: var(--bg-light);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    padding: 4rem 2rem;
+    background: var(--primary-color);
+    color: white;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--accent-color);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: #e2e8f0;
+    margin-bottom: 2rem;
+    max-width: 700px;
+}
+
+/* Feature Cards */
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--bg-light);
+    color: var(--primary-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: #2a2559;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-success {
+    background-color: var(--success);
+    border-radius: 4px;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 4px;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Footer */
+footer {
+    background: var(--primary-color);
+    color: #94a3b8;
+    padding: 3rem 0;
+    margin-top: auto;
+}
+
+footer a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+footer a:hover {
+    color: white;
+}

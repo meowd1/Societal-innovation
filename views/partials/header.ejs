@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jharkhand Societal Innovation Collaboration Portal</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <div id="skip-to-main">
+        <a href="#main-content" class="sr-only sr-only-focusable">Skip to main content</a>
+    </div>
+
+    <!-- Government of India Accessibility Header -->
+    <div class="gov-header-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="emblem-container fw-semibold d-flex align-items-center">
+                <img src="/images/emblem.jpg" alt="Government Emblem" height="30" class="me-2 bg-white p-1" style="border-radius: 4px;"> Government of Jharkhand
+            </div>
+            <div class="accessibility-toolbar d-flex gap-3 align-items-center">
+                <div class="font-resize gap-1 d-flex">
+                    <button class="btn btn-sm btn-outline-light border-0 px-2 py-0" style="border-radius: 2px;">A-</button>
+                    <button class="btn btn-sm btn-outline-light border-0 px-2 py-0" style="border-radius: 2px;">A</button>
+                    <button class="btn btn-sm btn-outline-light border-0 px-2 py-0" style="border-radius: 2px;">A+</button>
+                </div>
+                <select class="form-select form-select-sm bg-light text-dark border-0" style="width: 70px; border-radius: 2px;">
+                    <option value="en">EN</option>
+                    <option value="hi">हिं</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img src="/images/emblem.jpg" alt="Logo" height="40" class="d-none d-md-block">
+                <div class="d-flex flex-column">
+                    <span class="fw-bold" style="color: var(--primary-color); line-height: 1;">JSICP</span>
+                    <span class="fw-normal text-muted" style="font-size: 0.75rem;">Societal Innovation Portal</span>
+                </div>
+            </a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-house-door me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/challenges"><i class="bi bi-trophy me-1"></i> Challenges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ai-chat"><i class="bi bi-robot me-1 text-primary"></i> AI Advisor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="bi bi-info-circle me-1"></i> About</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <% if (locals.userRole) { %>
+                            <a class="nav-link btn-nav-primary px-4" href="/logout"><i class="bi bi-box-arrow-right me-1"></i> Logout (<%= locals.userName.split(' ')[0] %>)</a>
+                        <% } else { %>
+                            <a class="nav-link btn-nav-primary px-4" href="/login"><i class="bi bi-person-circle me-1"></i> Login / Register</a>
+                        <% } %>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="container mt-5 mb-5">

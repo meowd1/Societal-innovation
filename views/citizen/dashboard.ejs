@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Dashboard</h2>
+            <a href="/citizen/problems/new" class="btn btn-primary">+ REPORT A PROBLEM</a>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-3">My Submitted Problems</h4>
+                
+                <% if (problems && problems.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% problems.forEach(p => { %>
+                                    <tr>
+                                        <td><%= p.problem_code %></td>
+                                        <td><%= p.title %></td>
+                                        <td><%= new Date(p.created_at).toLocaleDateString() %></td>
+                                        <td><span class="badge bg-secondary"><%= p.status %></span></td>
+                                        <td><a href="/citizen/problems/<%= p.id %>" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-info">
+                        You have not submitted any problems yet. Click "Report a Problem" to begin.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

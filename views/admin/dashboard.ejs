@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Government Admin Dashboard</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Problems</h5>
+                <p class="card-text fs-2"><%= stats.totalProblems %></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Validated</h5>
+                <p class="card-text fs-2"><%= stats.validatedProblems %></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Active Projects</h5>
+                <p class="card-text fs-2"><%= stats.activeProjects %></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Universities</h5>
+                <p class="card-text fs-2"><%= stats.universities %></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Problem Submissions</h5>
+                <a href="/admin/problems" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Title</th>
+                                <th>Citizen</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentProblems.forEach(p => { %>
+                                <tr>
+                                    <td><%= p.problem_code %></td>
+                                    <td><%= p.title %></td>
+                                    <td><%= p.citizen_name %></td>
+                                    <td><%= new Date(p.created_at).toLocaleDateString() %></td>
+                                    <td>
+                                        <% if(p.status === 'SUBMITTED' || p.status === 'AI_ANALYZING') { %>
+                                            <span class="badge bg-warning text-dark"><%= p.status %></span>
+                                        <% } else if(p.status === 'VALIDATED') { %>
+                                            <span class="badge bg-success"><%= p.status %></span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary"><%= p.status %></span>
+                                        <% } %>
+                                    </td>
+                                    <td><a href="/admin/problems/<%= p.id %>" class="btn btn-sm btn-primary">Review</a></td>
+                                </tr>
+                            <% }) %>
+                            <% if(recentProblems.length === 0) { %>
+                                <tr><td colspan="6" class="text-center py-4">No recent problems</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,91 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Industry Partner Dashboard</h2>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Active University Projects (Opportunities for Partnership)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Project Code</th>
+                                <th>Problem Title</th>
+                                <th>Lead University</th>
+                                <th>Phase</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% opportunities.forEach(o => { %>
+                                <tr>
+                                    <td><%= o.problem_code %></td>
+                                    <td><%= o.problem_title %></td>
+                                    <td><%= o.university_name %></td>
+                                    <td><span class="badge bg-secondary"><%= o.status %></span></td>
+                                    <td>
+                                        <form action="/industry/projects/<%= o.id %>/partner" method="POST">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Offer Resources</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <% if(opportunities.length === 0) { %>
+                                <tr><td colspan="5" class="text-center py-4">No open projects right now.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-info">
+            <div class="card-header bg-info text-dark">
+                <h5 class="mb-0">My Active Partnerships</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Project Code</th>
+                                <th>Title</th>
+                                <th>Partnership Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% myProjects.forEach(p => { %>
+                                <tr>
+                                    <td><%= p.problem_code %></td>
+                                    <td><%= p.problem_title %></td>
+                                    <td><span class="badge bg-primary">ACTIVE</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" onclick="alert('Industry partner workspace for sharing resources.')">View Workspace</button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <% if(myProjects.length === 0) { %>
+                                <tr><td colspan="4" class="text-center py-4">You have no active partnerships.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

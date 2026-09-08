@@ -1,0 +1,140 @@
+<%- include('partials/header') %>
+
+<div class="row h-100 justify-content-center" style="min-height: calc(100vh - 150px);">
+    <div class="col-lg-10 col-xl-8 d-flex flex-column">
+        
+        <div class="text-center mb-3 mt-2">
+            <h2 class="fw-bold"><i class="bi bi-robot text-primary me-2"></i>AI Societal Advisor</h2>
+            <p class="text-muted">Ask questions about societal problems, potential solutions, or how to get started on a project.</p>
+        </div>
+
+        <div class="card flex-grow-1 shadow-sm border-0 mb-4" style="border-radius: 1rem; overflow: hidden;">
+            
+            <!-- Chat Window -->
+            <div id="chatWindow" class="card-body p-4 bg-light overflow-auto" style="height: 50vh; display: flex; flex-direction: column; gap: 1rem;">
+                
+                <!-- Initial Welcome Message -->
+                <div class="d-flex w-100">
+                    <div class="bg-white rounded-4 p-3 shadow-sm" style="max-width: 85%; border-top-left-radius: 0 !important;">
+                        <div class="fw-bold mb-1 text-primary"><i class="bi bi-robot me-1"></i> AI Advisor</div>
+                        <p class="mb-0 text-dark">Hello! I am the Jharkhand Societal Innovation AI Advisor. I'm connected to a local LLM via Ollama. How can I help you today? You can ask me about drafting problem statements, analyzing technical feasibility for infrastructure projects, or exploring solutions for local issues like sewage or agriculture.</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Input Area -->
+            <div class="card-footer bg-white border-top p-3">
+                <form id="chatForm" class="d-flex gap-2">
+                    <input type="text" id="chatInput" class="form-control form-control-lg rounded-pill px-4 bg-light border-0" placeholder="Type your message here..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-circle shadow-sm" id="sendBtn" style="width: 50px; height: 50px; flex-shrink: 0;">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatWindow = document.getElementById('chatWindow');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Simple markdown to HTML parser for basic formatting
+    function parseMarkdown(text) {
+        let html = text.replace(/\n/g, '<br>'); // Newlines
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italic
+        return html;
+    }
+
+    function appendMessage(sender, text, isAi = false) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex w-100 mb-2 ' + (isAi ? '' : 'justify-content-end');
+        
+        const bubble = document.createElement('div');
+        if (isAi) {
+            bubble.className = 'bg-white rounded-4 p-3 shadow-sm';
+            bubble.style.cssText = 'max-width: 85%; border-top-left-radius: 0 !important;';
+            bubble.innerHTML = `<div class="fw-bold mb-1 text-primary"><i class="bi bi-robot me-1"></i> ${sender}</div><p class="mb-0 text-dark">${parseMarkdown(text)}</p>`;
+        } else {
+            bubble.className = 'bg-primary text-white rounded-4 p-3 shadow-sm';
+            bubble.style.cssText = 'max-width: 85%; border-top-right-radius: 0 !important;';
+            bubble.innerHTML = `<div class="fw-bold mb-1 text-light"><i class="bi bi-person-fill me-1"></i> ${sender}</div><p class="mb-0">${text}</p>`;
+        }
+        
+        wrapper.appendChild(bubble);
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        
+        return bubble;
+    }
+
+    function appendLoading() {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'loadingBubble';
+        wrapper.className = 'd-flex w-100 mb-2';
+        wrapper.innerHTML = `
+            <div class="bg-white rounded-4 p-3 shadow-sm" style="max-width: 85%; border-top-left-radius: 0 !important;">
+                <div class="fw-bold mb-1 text-primary"><i class="bi bi-robot me-1"></i> AI Advisor</div>
+                <div class="d-flex gap-1 align-items-center mt-2">
+                    <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="width: 0.5rem; height: 0.5rem;"></div>
+                    <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="width: 0.5rem; height: 0.5rem; animation-delay: 0.1s;"></div>
+                    <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="width: 0.5rem; height: 0.5rem; animation-delay: 0.2s;"></div>
+                </div>
+            </div>
+        `;
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function removeLoading() {
+        const loading = document.getElementById('loadingBubble');
+        if (loading) loading.remove();
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        appendMessage('You', message, false);
+        chatInput.value = '';
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
+
+        appendLoading();
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            removeLoading();
+            
+            if (response.ok) {
+                const data = await response.json();
+                appendMessage('AI Advisor', data.reply, true);
+            } else {
+                const errData = await response.json();
+                appendMessage('System Error', 'Failed to connect to the AI: ' + (errData.error || 'Unknown error. Ensure Ollama is running.'), true);
+            }
+        } catch (error) {
+            removeLoading();
+            appendMessage('System Error', 'Could not reach the server.', true);
+            console.error(error);
+        } finally {
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.focus();
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

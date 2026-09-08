@@ -1,0 +1,169 @@
+<%- include('partials/header') %>
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold">Available Challenges</h2>
+        <p class="text-muted mb-0">Browse and explore real-world societal problems submitted by citizens of Jharkhand that are ready to be solved.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <% if (locals.userRole) { %>
+            <a href="/<%= locals.userRole === 'CITIZEN' ? 'citizen' : (['STUDENT', 'FACULTY', 'UNIVERSITY_ADMIN'].includes(locals.userRole) ? 'university' : (locals.userRole === 'INDUSTRY_PARTNER' ? 'industry' : 'admin')) %>/dashboard" class="btn btn-outline-success rounded-pill px-4">Go to Dashboard</a>
+        <% } else { %>
+            <a href="/login" class="btn btn-outline-primary rounded-pill px-4">Login to Contribute</a>
+        <% } %>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Filter Tabs (UI Only for demonstration, filtering done via CSS classes) -->
+    <div class="col-12 mb-4 d-flex gap-2">
+        <button class="btn btn-primary rounded-pill px-4" onclick="filterProblems('all')">All Challenges</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4" onclick="filterProblems('local')">Local Jharkhand</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4" onclick="filterProblems('external')">National & Global</button>
+    </div>
+
+    <% if (problems && problems.length > 0) { %>
+        <% problems.forEach(p => { %>
+            <div class="col-md-6 col-lg-4 mb-4 problem-card <%= p.isExternal ? 'external-prob' : 'local-prob' %>">
+                <div class="card h-100 border-0 shadow-sm" style="<%= p.isExternal ? 'border-top: 4px solid #3b82f6 !important;' : 'border-top: 4px solid #10b981 !important;' %>">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <% if (p.isExternal) { %>
+                                <span class="badge bg-primary px-2 py-1"><i class="bi bi-globe me-1"></i> <%= p.sourceName %></span>
+                            <% } else { %>
+                                <span class="badge bg-light text-dark border px-2 py-1"><i class="bi bi-hash"></i> <%= p.code %></span>
+                                <% if (p.status === 'PENDING_VALIDATION') { %>
+                                    <span class="badge bg-warning text-dark px-2 py-1">In Review</span>
+                                <% } else if (p.status === 'VALIDATED') { %>
+                                    <span class="badge bg-success px-2 py-1">Validated</span>
+                                <% } else if (p.status === 'PROJECT_INITIATED') { %>
+                                    <span class="badge bg-primary px-2 py-1">Active Project</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary px-2 py-1"><%= p.status %></span>
+                                <% } %>
+                            <% } %>
+                        </div>
+                        
+                        <h5 class="card-title fw-bold mb-2"><%= p.title %></h5>
+                        <p class="card-text text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                            <%= p.description %>
+                        </p>
+                        
+                        <% if (!p.isExternal) { %>
+                            <!-- Hidden Tracker Content for Modal -->
+                            <div class="d-none problem-tracker-content" id="tracker-content-<%= p.id %>">
+                                <%- include('partials/progress_tracker', { problemStatus: p.status, projectStatus: p.project_status }) %>
+                            </div>
+                        <% } %>
+                        
+                        <div class="mt-auto">
+                            <% if (p.isExternal) { %>
+                                <div class="d-flex align-items-center text-muted small mb-3">
+                                    <i class="bi bi-tags-fill me-2 text-info"></i>
+                                    <%= p.category || 'General' %>
+                                </div>
+                            <% } else { %>
+                                <div class="d-flex align-items-center text-muted small mb-3">
+                                    <i class="bi bi-geo-alt-fill me-2 text-danger"></i>
+                                    <%= p.location %>
+                                </div>
+                                <div class="d-flex align-items-center text-muted small mb-3">
+                                    <i class="bi bi-people-fill me-2 text-primary"></i>
+                                    Est. Impact: <%= p.impact || 'Unknown' %> people
+                                </div>
+                                <button onclick="openTrackerModal('<%= p.id %>', '<%= p.title.replace(/'/g, "\\'") %>')" class="btn btn-sm btn-outline-primary fw-bold w-100 mb-2">
+                                    <i class="bi bi-bar-chart-steps me-1"></i> Track Progress
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light border-top-0 pt-3 pb-3">
+                        <% if (p.isExternal) { %>
+                            <a href="<%= p.sourceUrl %>" target="_blank" class="btn btn-outline-primary w-100 fw-bold">
+                                View on <%= p.sourceName %> <i class="bi bi-box-arrow-up-right ms-1"></i>
+                            </a>
+                        <% } else { %>
+                            <% if (locals.userRole) { %>
+                                <% if (['STUDENT', 'FACULTY', 'UNIVERSITY_ADMIN'].includes(locals.userRole)) { %>
+                                    <a href="/university/dashboard" class="btn btn-success w-100 fw-bold">Solve Problem</a>
+                                <% } else if (locals.userRole === 'CITIZEN') { %>
+                                    <button disabled class="btn btn-secondary w-100 fw-bold">Citizens cannot solve</button>
+                                <% } else if (locals.userRole === 'INDUSTRY_PARTNER') { %>
+                                    <a href="/industry/dashboard" class="btn btn-success w-100 fw-bold">Fund Project</a>
+                                <% } else { %>
+                                    <a href="/admin/dashboard" class="btn btn-success w-100 fw-bold">Manage Problem</a>
+                                <% } %>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-primary w-100 fw-bold">Login to Solve</a>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col-12">
+            <div class="alert alert-info border-0 shadow-sm d-flex align-items-center">
+                <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                <div>No challenges are publicly available at the moment. Check back soon.</div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Progress Tracker Modal -->
+<div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-top: 4px solid var(--primary-color) !important; border-radius: 4px;">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold" id="progressModalLabel" style="color: var(--primary-color);">Problem Progress</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-white" id="progressModalBody">
+        <!-- Tracker injected here -->
+      </div>
+      <div class="modal-footer border-0 bg-light">
+        <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function filterProblems(type) {
+        document.querySelectorAll('.btn-primary, .btn-outline-secondary').forEach(btn => {
+            if (btn.innerText.includes('Solve') || btn.innerText.includes('Login') || btn.innerText.includes('Close')) return; // exclude action buttons
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline-secondary');
+        });
+        
+        event.target.classList.remove('btn-outline-secondary');
+        event.target.classList.add('btn-primary');
+        
+        const cards = document.querySelectorAll('.problem-card');
+        cards.forEach(card => {
+            if (type === 'all') {
+                card.style.display = 'block';
+            } else if (type === 'local') {
+                card.style.display = card.classList.contains('local-prob') ? 'block' : 'none';
+            } else if (type === 'external') {
+                card.style.display = card.classList.contains('external-prob') ? 'block' : 'none';
+            }
+        });
+    }
+
+    function openTrackerModal(problemId, problemTitle) {
+        // Set Title
+        document.getElementById('progressModalLabel').innerText = 'Progress: ' + problemTitle;
+        
+        // Inject content
+        const contentHtml = document.getElementById('tracker-content-' + problemId).innerHTML;
+        document.getElementById('progressModalBody').innerHTML = contentHtml;
+        
+        // Show Modal
+        var myModal = new bootstrap.Modal(document.getElementById('progressModal'));
+        myModal.show();
+    }
+</script>
+
+<%- include('partials/footer') %>

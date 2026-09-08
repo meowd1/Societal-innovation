@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <h2>Problem Management</h2>
+    </div>
+    <div class="col-md-4">
+        <form action="/admin/problems" method="GET" class="d-flex">
+            <select name="status" class="form-select me-2" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="SUBMITTED" <%= currentStatus === 'SUBMITTED' ? 'selected' : '' %>>SUBMITTED</option>
+                <option value="AI_ANALYZING" <%= currentStatus === 'AI_ANALYZING' ? 'selected' : '' %>>AI_ANALYZING</option>
+                <option value="PENDING_VALIDATION" <%= currentStatus === 'PENDING_VALIDATION' ? 'selected' : '' %>>PENDING_VALIDATION</option>
+                <option value="VALIDATED" <%= currentStatus === 'VALIDATED' ? 'selected' : '' %>>VALIDATED</option>
+                <option value="REJECTED" <%= currentStatus === 'REJECTED' ? 'selected' : '' %>>REJECTED</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Title</th>
+                                <th>District</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% problems.forEach(p => { %>
+                                <tr>
+                                    <td><%= p.problem_code %></td>
+                                    <td><%= p.title %></td>
+                                    <td><%= p.district %></td>
+                                    <td><%= p.citizen_priority %></td>
+                                    <td>
+                                        <span class="badge <%= p.status === 'VALIDATED' ? 'bg-success' : 'bg-secondary' %>"><%= p.status %></span>
+                                    </td>
+                                    <td><a href="/admin/problems/<%= p.id %>" class="btn btn-sm btn-primary">Review</a></td>
+                                </tr>
+                            <% }) %>
+                            <% if(problems.length === 0) { %>
+                                <tr><td colspan="6" class="text-center py-4">No problems found.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

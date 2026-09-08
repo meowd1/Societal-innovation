@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/university/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Match Review - <%= match.problem_code %></li>
+            </ol>
+        </nav>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Problem Details: <%= match.title %></h4>
+                <span class="badge bg-light text-dark fs-6">Match Score: <%= Math.round(match.match_score * 100) %>%</span>
+            </div>
+            <div class="card-body">
+                <h5 class="text-muted border-bottom pb-2">Description</h5>
+                <p class="card-text mt-3"><%= match.description %></p>
+                
+                <h5 class="text-muted border-bottom pb-2 mt-4">Why this was recommended to your university:</h5>
+                <ul class="mt-3">
+                    <% try { %>
+                        <% JSON.parse(match.matching_reasons || '[]').forEach(reason => { %>
+                            <li><%= reason %></li>
+                        <% }) %>
+                    <% } catch(e) {} %>
+                </ul>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <form action="/university/matches/<%= match.match_id %>/reject" method="POST">
+                        <button type="submit" class="btn btn-outline-danger">Decline Match</button>
+                    </form>
+                    <form action="/university/matches/<%= match.match_id %>/accept" method="POST">
+                        <button type="submit" class="btn btn-success">Accept & Create Project</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

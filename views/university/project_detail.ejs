@@ -1,0 +1,96 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/university/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Project Workspace</li>
+            </ol>
+        </nav>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><%= project.problem_title %></h2>
+            <span class="badge bg-primary fs-5"><%= project.status %></span>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Original Problem Details -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <strong>Original Problem (<%= project.problem_code %>)</strong>
+                    </div>
+                    <div class="card-body">
+                        <p><%= project.problem_desc %></p>
+                    </div>
+                </div>
+                
+                <!-- Prototype/Solution Submission (Mock) -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <strong>Solution Workspace</strong>
+                        <span class="badge bg-light text-dark">Phase: <%= project.status %></span>
+                    </div>
+                    <div class="card-body">
+                        <p>Use this area to upload design documents, prototype schematics, or final code repositories for the solution.</p>
+                        
+                        <form action="/university/projects/<%= project.id %>/status" method="POST" class="mb-3">
+                            <div class="mb-3">
+                                <label class="form-label">Update Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="IDEATION" <%= project.status === 'IDEATION' ? 'selected' : '' %>>Ideation & Planning</option>
+                                    <option value="PROTOTYPING" <%= project.status === 'PROTOTYPING' ? 'selected' : '' %>>Prototyping</option>
+                                    <option value="TESTING" <%= project.status === 'TESTING' ? 'selected' : '' %>>Testing & Validation</option>
+                                    <option value="COMPLETED" <%= project.status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Upload Prototype Document / Report</label>
+                                <input type="file" class="form-control" disabled title="File upload mock for MVP">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Progress</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-dark d-flex justify-content-between align-items-center">
+                        <strong>Team Members</strong>
+                        <% if(locals.userRole === 'UNIVERSITY_ADMIN') { %>
+                            <button class="btn btn-sm btn-outline-dark" onclick="alert('Add student modal would open here.')">+ Add</button>
+                        <% } %>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <% teamMembers.forEach(member => { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><%= member.full_name %></strong><br>
+                                        <small class="text-muted"><%= member.email %></small>
+                                    </div>
+                                    <span class="badge bg-secondary"><%= member.role %></span>
+                                </li>
+                            <% }) %>
+                            <% if(teamMembers.length === 0) { %>
+                                <li class="list-group-item text-muted text-center py-3">No team members assigned yet.</li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">Industry Partner Request</h5>
+                        <p class="small text-muted">Need funding or industry expertise? Request an industry partner match.</p>
+                        <button class="btn btn-warning w-100" onclick="alert('This would trigger the Industry Partner Matching API.')">Request Partner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

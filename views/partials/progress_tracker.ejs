@@ -1,0 +1,116 @@
+<% 
+  let currentStep = 1; 
+  if (problemStatus === 'PENDING_VALIDATION' || problemStatus === 'VALIDATED') currentStep = 2;
+  if (problemStatus === 'PROJECT_INITIATED' || problemStatus === 'ASSIGNED') {
+      currentStep = 3; 
+      if (projectStatus === 'PROTOTYPING') currentStep = 4;
+      if (projectStatus === 'TESTING') currentStep = 5;
+      if (projectStatus === 'COMPLETED') currentStep = 6;
+  }
+  
+  const steps = [
+    { num: 1, label: 'Submitted', icon: 'bi-file-earmark-text' },
+    { num: 2, label: 'Validated', icon: 'bi-check-circle' },
+    { num: 3, label: 'Ideation', icon: 'bi-lightbulb' },
+    { num: 4, label: 'Prototyping', icon: 'bi-tools' },
+    { num: 5, label: 'Testing', icon: 'bi-clipboard-check' },
+    { num: 6, label: 'Solved', icon: 'bi-trophy' }
+  ];
+%>
+
+<style>
+.progress-stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+}
+.progress-stepper::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #e9ecef;
+    z-index: 1;
+}
+.progress-stepper .progress-bar-fill {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 0;
+    height: 4px;
+    background-color: #10b981;
+    z-index: 2;
+    transition: width 0.4s ease;
+}
+.step-item {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    width: 16.66%;
+}
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px auto;
+    font-size: 1.2rem;
+    border: 3px solid #fff;
+    transition: all 0.3s ease;
+}
+.step-item.active .step-icon {
+    background-color: #10b981;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+.step-item.completed .step-icon {
+    background-color: #10b981;
+    color: #fff;
+}
+.step-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+.step-item.active .step-label, .step-item.completed .step-label {
+    color: #1f2937;
+}
+
+@media (max-width: 768px) {
+    .step-label {
+        font-size: 0.65rem;
+    }
+    .step-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+    .progress-stepper::before, .progress-stepper .progress-bar-fill {
+        top: 19px;
+    }
+}
+</style>
+
+<div class="progress-stepper">
+    <div class="progress-bar-fill" style="width: <%= ((currentStep - 1) / (steps.length - 1)) * 100 %>%;"></div>
+    <% steps.forEach((step, index) => { %>
+        <div class="step-item <%= currentStep === step.num ? 'active' : '' %> <%= currentStep > step.num ? 'completed' : '' %>">
+            <div class="step-icon">
+                <% if (currentStep > step.num) { %>
+                    <i class="bi bi-check"></i>
+                <% } else { %>
+                    <i class="bi <%= step.icon %>"></i>
+                <% } %>
+            </div>
+            <div class="step-label"><%= step.label %></div>
+        </div>
+    <% }) %>
+</div>

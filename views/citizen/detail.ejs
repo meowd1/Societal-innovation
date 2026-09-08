@@ -1,0 +1,82 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/citizen/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= problem.problem_code %></li>
+            </ol>
+        </nav>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><%= problem.title %></h2>
+            <span class="badge bg-primary fs-5"><%= problem.status %></span>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title text-muted mb-4">Problem Progress Status</h5>
+                <%- include('../partials/progress_tracker', { problemStatus: problem.status, projectStatus: problem.project_status }) %>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted border-bottom pb-2">Description</h5>
+                        <p class="card-text mt-3"><%= problem.description %></p>
+                        
+                        <h5 class="card-title text-muted border-bottom pb-2 mt-4">Location Details</h5>
+                        <p class="mt-2">
+                            <strong>District:</strong> <%= problem.district %> <br>
+                            <strong>Block:</strong> <%= problem.block || 'N/A' %> <br>
+                            <strong>Village:</strong> <%= problem.village || 'N/A' %>
+                        </p>
+                    </div>
+                </div>
+
+                <% if (media && media.length > 0) { %>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted border-bottom pb-2">Evidence / Media</h5>
+                            <div class="mt-3">
+                                <% media.forEach(m => { %>
+                                    <% if (m.mime_type && m.mime_type.startsWith('image/')) { %>
+                                        <img src="<%= m.storage_path %>" class="img-fluid img-thumbnail" style="max-height: 300px;" alt="Evidence Image">
+                                    <% } else { %>
+                                        <a href="<%= m.storage_path %>" target="_blank" class="btn btn-outline-secondary btn-sm">View Attached Document</a>
+                                    <% } %>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title border-bottom pb-2">System Analysis</h5>
+                        <% if (aiAnalysis) { %>
+                            <p class="mt-2"><strong>Category:</strong> <%= aiAnalysis.primary_category %></p>
+                            <p><strong>Priority:</strong> <span class="badge bg-danger"><%= aiAnalysis.priority %></span></p>
+                            <p><strong>Required Skills:</strong> 
+                                <% try { %>
+                                    <% JSON.parse(aiAnalysis.required_skills || '[]').forEach(skill => { %>
+                                        <span class="badge bg-info text-dark"><%= skill %></span>
+                                    <% }) %>
+                                <% } catch(e) {} %>
+                            </p>
+                        <% } else { %>
+                            <p class="text-muted fst-italic mt-2">Analysis in progress...</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

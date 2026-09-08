@@ -1,0 +1,83 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/citizen/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Report Problem</li>
+            </ol>
+        </nav>
+        
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h3 class="card-title mb-4">Report a Societal Problem</h3>
+                
+                <form action="/citizen/problems/new" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Problem Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., Affordable smart irrigation for small farmers">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Detailed Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="district" class="form-label">District <span class="text-danger">*</span></label>
+                            <select class="form-select" id="district" name="district" required>
+                                <option value="">Select District</option>
+                                <option value="Ranchi">Ranchi</option>
+                                <option value="Dumka">Dumka</option>
+                                <option value="Dhanbad">Dhanbad</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="block" class="form-label">Block/Locality</label>
+                            <input type="text" class="form-control" id="block" name="block">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="village" class="form-label">Village</label>
+                            <input type="text" class="form-control" id="village" name="village">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="citizen_priority" class="form-label">How urgent is this?</label>
+                            <select class="form-select" id="citizen_priority" name="citizen_priority">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="affected_population_estimate" class="form-label">Affected Population (Estimate)</label>
+                            <input type="number" class="form-control" id="affected_population_estimate" name="affected_population_estimate" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photo" class="form-label">Attach Photo/Evidence</label>
+                        <input class="form-control" type="file" id="photo" name="photo" accept="image/*,video/*,.pdf">
+                    </div>
+                    
+                    <!-- Hidden inputs for coordinates, could be populated via a map widget -->
+                    <input type="hidden" name="latitude" id="latitude" value="">
+                    <input type="hidden" name="longitude" id="longitude" value="">
+
+                    <div class="alert alert-warning small">
+                        <strong>Consent:</strong> By submitting this problem, you agree that the information provided will be reviewed by government officials, AI systems, and partnered institutions to find a solution.
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Submit Problem</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
