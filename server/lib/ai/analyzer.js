@@ -28,12 +28,14 @@ async function analyzeProblem(problem) {
         };
     }
 
-    // Attempt to use Ollama for real AI analysis
-    const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434/api/chat';
-    const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3';
+    // Attempt to use OpenRouter for real AI analysis
+    const OPENROUTER_URL = process.env.OPENROUTER_URL || 'https://openrouter.ai/api/v1/chat/completions';
+    const AI_MODEL = process.env.AI_MODEL || 'nvidia/llama-3.1-nemotron-70b-instruct:free';
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-    try {
-        const systemPrompt = `You are an AI that analyzes problems submitted by citizens.
+    if (OPENROUTER_API_KEY) {
+        try {
+            const systemPrompt = `You are an AI that analyzes problems submitted by citizens.
 Your job is to read the problem title and description, and return a JSON object describing the problem.
 The JSON object MUST match this schema:
 {
@@ -48,39 +50,47 @@ The JSON object MUST match this schema:
 }
 Return ONLY valid JSON. Do not include markdown formatting like \`\`\`json. Do not include <thinking> tags or preamble.`;
 
-        const userPrompt = `Title: ${problem.title}\nDescription: ${problem.description}`;
+            const userPrompt = `Title: ${problem.title}\nDescription: ${problem.description}`;
 
-        const response = await fetch(OLLAMA_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: OLLAMA_MODEL,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userPrompt }
-                ],
-                stream: false,
-                format: 'json'
-            }),
-            signal: AbortSignal.timeout(30000)
-        });
+            const response = await fetch(OPENROUTER_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                    'HTTP-Referer': 'https://jsicp-portal.example.com',
+                    'X-Title': 'JSICP'
+                },
+                body: JSON.stringify({
+                    model: AI_MODEL,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ]
+                }),
+                signal: AbortSignal.timeout(30000)
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            const reply = data.message.content;
-            
-            // Clean out potential markdown or thinking tags
-            const jsonStr = reply.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').replace(/```json/gi, '').replace(/```/gi, '').trim();
-            const parsedData = JSON.parse(jsonStr);
-            
-            const validated = aiAnalysisSchema.parse(parsedData);
-            console.log('Successfully analyzed problem using Ollama.');
-            return validated;
-        } else {
-            console.error('Ollama returned non-ok status:', response.status);
+            if (response.ok) {
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                
+                // Clean out potential markdown or thinking tags
+                const jsonStr = reply.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').replace(/```json/gi, '').replace(/```/gi, '').trim();
+                const parsedData = JSON.parse(jsonStr);
+                
+                const validated = aiAnalysisSchema.parse(parsedData);
+                console.log('Successfully analyzed problem using OpenRouter.');
+                return validated;
+            } else {
+                console.error('OpenRouter returned non-ok status:', response.status);
+                const errBody = await response.text();
+                console.error(errBody);
+            }
+        } catch (error) {
+            console.error('Error during AI analysis via OpenRouter, falling back to mock data:', error.message);
         }
-    } catch (error) {
-        console.error('Error during AI analysis via Ollama, falling back to mock data:', error.message);
+    } else {
+        console.log('No OPENROUTER_API_KEY provided, skipping AI analysis.');
     }
 
     console.log('Using mock AI analysis.');
