@@ -127,4 +127,47 @@ router.post('/admin/problems/:id/assign', authorize(['GOVERNMENT_ADMIN', 'SUPER_
     res.redirect('/admin/problems/' + req.params.id);
 });
 
+// Delete Problem
+router.post('/admin/problems/:id/delete', authorize(['GOVERNMENT_ADMIN', 'SUPER_ADMIN']), (req, res) => {
+    db.transaction(() => {
+        const id = req.params.id;
+        
+        // Manual cascade delete to avoid FK constraints
+        db.prepare('DELETE FROM problem_media WHERE problem_id = ?').run(id);
+        db.prepare('DELETE FROM problem_ai_analysis WHERE problem_id = ?').run(id);
+        db.prepare('DELETE FROM problem_similarity WHERE problem_id = ? OR similar_problem_id = ?').run(id, id);
+        db.prepare('DELETE FROM university_matches WHERE problem_id = ?').run(id);
+        db.prepare('DELETE FROM challenges WHERE problem_id = ?').run(id);
+        db.prepare('DELETE FROM comments WHERE problem_id = ?').run(id);
+        
+        const projects = db.prepare('SELECT id FROM projects WHERE problem_id = ?').all(id);
+        for (const proj of projects) {
+            db.prepare('DELETE FROM project_members WHERE project_id = ?').run(proj.id);
+            db.prepare('DELETE FROM project_partners WHERE project_id = ?').run(proj.id);
+            db.prepare('DELETE FROM proposals WHERE project_id = ?').run(proj.id);
+            
+            const milestones = db.prepare('SELECT id FROM milestones WHERE project_id = ?').all(proj.id);
+            for (const m of milestones) {
+                db.prepare('DELETE FROM milestone_evidence WHERE milestone_id = ?').run(m.id);
+            }
+            db.prepare('DELETE FROM milestones WHERE project_id = ?').run(proj.id);
+            
+            db.prepare('DELETE FROM partnership_requests WHERE project_id = ?').run(proj.id);
+            db.prepare('DELETE FROM impact_metrics WHERE project_id = ?').run(proj.id);
+            db.prepare('DELETE FROM comments WHERE project_id = ?').run(proj.id);
+            
+            db.prepare('DELETE FROM projects WHERE id = ?').run(proj.id);
+        }
+        
+        db.prepare('DELETE FROM problems WHERE id = ?').run(id);
+        
+        db.prepare(`
+            INSERT INTO audit_logs (id, actor_id, entity_type, entity_id, action)
+            VALUES (?, ?, ?, ?, ?)
+        `).run('log-' + Date.now(), req.session.userId, 'problem', id, 'DELETED');
+    })();
+    
+    res.redirect('/admin/problems');
+});
+
 module.exports = router;

@@ -180,6 +180,11 @@
                                 </div>
                             </form>
                         <% } %>
+                        <hr>
+                        <h6 class="text-danger mt-3">Danger Zone</h6>
+                        <form action="/admin/problems/<%= problem.id %>/delete" method="POST" class="d-grid gap-2" onsubmit="return confirm('Are you sure you want to completely delete this problem? This action cannot be undone.');">
+                            <button type="submit" class="btn btn-danger">DELETE PROBLEM</button>
+                        </form>
                     </div>
                 </div>
             </div>
