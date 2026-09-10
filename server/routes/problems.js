@@ -36,7 +36,7 @@ router.post('/citizen/problems/new', authorize(['CITIZEN']), upload.single('phot
     db.transaction(() => {
         db.prepare(`
             INSERT INTO problems (id, problem_code, submitted_by, title, description, district, block, village, latitude, longitude, citizen_priority, affected_population_estimate, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SUBMITTED')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'VALIDATED')
         `).run(problemId, problemCode, req.session.userId, title, description, district, block, village, latitude, longitude, citizen_priority, affected_population_estimate);
         
         if (req.file) {

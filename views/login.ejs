@@ -14,8 +14,15 @@
                 
                 <form action="/login" method="POST">
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <label for="email" class="form-label">Role</label>
+                        <select class="form-select" id="email" name="email" required>
+                            <option value="" disabled selected>Select your role...</option>
+                            <option value="citizen@demo.com">Citizen</option>
+                            <option value="student@demo.com">Student</option>
+                            <option value="university@demo.com">University</option>
+                            <option value="industry@demo.com">Industry</option>
+                            <option value="admin@demo.com">Admin</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
@@ -27,15 +34,7 @@
                 </form>
                 
                 <div class="mt-4 text-center">
-                    <p>Demo Accounts:</p>
-                    <ul class="list-unstyled text-muted small">
-                        <li>citizen@demo.com</li>
-                        <li>admin@demo.com</li>
-                        <li>university@demo.com</li>
-                        <li>student@demo.com</li>
-                        <li>industry@demo.com</li>
-                        <li><strong>Password:</strong> password123</li>
-                    </ul>
+                    <p class="text-muted small"><strong>Prototype Demonstration:</strong> Password for all roles is <code>123</code>.</p>
                 </div>
             </div>
         </div>
